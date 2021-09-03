@@ -43,3 +43,22 @@ Baixar arquivos de exomas do gnomAD no formato `VCF` via comando `wget` no termi
 ```
 wget -i link_gnomad_exome.txt
 ```
+
+# Extrair informações necessarias dos arquivos gnomAD
+
+Utilizar o ambiente `R` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` para realizar a extração dos campos.
+
+```r
+for (i in 1:22){
+system(paste0("gunzip -c gnomad.exomes.r2.1.1.sites.,i,.vcf.bgz | sed "s/vep/CSQ/" | bgzip > chr,i,.vcf.bgz && tabix -f -p vcf chr,i,.vcf.bgz"))
+}
+```
+
+O complemento `split-vep` do `bcftools` foi implementado no `R` para extrair os campos:
+
+```r
+for (i in 1:22){
+system(paste0("bcftools +split-vep chr,i,.vcf.bgz -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%SYMBOL\t%Consequence\t%FILTER\n' -d > chr,i,.txt"))
+}
+
+```
