@@ -11,7 +11,7 @@ Ferramenta desenvolvido em `Python` para organizar as etapas de análise de dado
 
 Os dados genéticos do exoma do BIPMED (GRCh37/hg19) está disponivel em https://www.ebi.ac.uk/ena/browser/view/PRJEB39251.
 
-Executar o script `pipeline_dados_geneticos.py` via terminal para realizar o controle de qualidade e calculo de frequência alélica.
+Executar o script `pipeline_dados_geneticos.py` via terminal para realizar o controle de qualidade e cálculo de frequência alélica.
 
 # Obter arquivos de dados de exoma do gnomAD
 
