@@ -46,19 +46,14 @@ wget -i link_gnomad_exome.txt
 
 # Extrair informações necessarias dos arquivos gnomAD
 
-Utilizar o ambiente `R` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` para realizar a extração dos campos.
+Utilizar o terminal do `Linux` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` para realizar a extração dos campos.
 
-```r
-for (i in 1:22){
-system(paste0("gunzip -c gnomad.exomes.r2.1.1.sites.,i,.vcf.bgz | sed "s/vep/CSQ/" | bgzip > chr,i,.vcf.bgz && tabix -f -p vcf chr,i,.vcf.bgz"))
-}
+```
+for i in $(seq 1 22); do gunzip -c gnomad.exomes.r2.1.1.sites.$i.vcf.bgz | sed "s/vep/CSQ/" | bgzip > chr$i.vcf.bgz && tabix -f -p vcf chr$i.vcf.bgz; done
 ```
 
-O complemento `split-vep` do `bcftools` foi implementado no `R` para extrair os campos:
+O complemento `split-vep` do `bcftools` foi executado via terminal do ´Linux´ para extrair os campos desejados:
 
-```r
-for (i in 1:22){
-system(paste0("bcftools +split-vep chr,i,.vcf.bgz -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%SYMBOL\t%Consequence\t%FILTER\n' -d > chr,i,.txt"))
-}
-
+```
+for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%SYMBOL\t%Consequence\t%FILTER\n' -d > chr$i.txt; done
 ```
