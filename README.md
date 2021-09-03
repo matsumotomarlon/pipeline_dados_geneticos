@@ -44,7 +44,7 @@ https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/vcf/exomes/
 https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/vcf/exomes/gnomad.exomes.r2.1.1.sites.1.vcf.bgz
 ```
 
-Baixar arquivos de exomas do gnomAD no formato `VCF` via comando `wget` no terminal do `Linux`
+Baixar arquivos de exomas do gnomAD no formato `VCF` via comando `wget` no terminal do `Linux`:
 
 ```
 wget -i link_gnomad_exome.txt
@@ -52,7 +52,7 @@ wget -i link_gnomad_exome.txt
 
 # Extrair informações necessárias dos arquivos gnomAD
 
-Utilizar o terminal do `Linux` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` e cria um novo arquivo `VCF` e `tbi`.
+Utilizar o terminal do `Linux` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` e cria um novo arquivo `VCF` e `tbi`:
 
 ```
 for i in $(seq 1 22); do gunzip -c gnomad.exomes.r2.1.1.sites.$i.vcf.bgz | sed "s/vep/CSQ/" | bgzip > chr$i.vcf.bgz && tabix -f -p vcf chr$i.vcf.bgz; done
