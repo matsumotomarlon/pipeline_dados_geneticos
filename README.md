@@ -5,7 +5,7 @@ Ferramenta desenvolvido em `Python` para organizar as etapas de análise de dado
 **Requisitos:**
 `Linux`
 `PLINK 1.9`
-`Python 3.8.8`
+`Python 3.8.8+`
 
 # Obter arquivos WES do BIPMED
 
