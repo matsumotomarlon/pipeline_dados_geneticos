@@ -50,7 +50,7 @@ Baixar arquivos de exomas do gnomAD no formato `VCF` via comando `wget` no termi
 wget -i link_gnomad_exome.txt
 ```
 
-# Extrair informações necessarias dos arquivos gnomAD
+# Extrair informações necessárias dos arquivos gnomAD
 
 Utilizar o terminal do `Linux` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` para realizar a extração dos campos.
 
