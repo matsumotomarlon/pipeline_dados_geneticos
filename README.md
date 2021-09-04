@@ -52,7 +52,7 @@ wget -i link_gnomad_exome.txt
 
 # Extrair informações necessárias dos arquivos gnomAD
 
-Utilizar o terminal do `Linux` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` e cria um novo arquivo `VCF` e `tbi`:
+Utilizar o terminal do `Linux` para renomear a ID `vep` para `CSQ`, pois o `bcftools` não identifica a ID `vep` e salva em um novo arquivo `VCF` e `tbi`:
 
 ```
 for i in $(seq 1 22); do gunzip -c gnomad.exomes.r2.1.1.sites.$i.vcf.bgz | sed "s/vep/CSQ/" | bgzip > chr$i.vcf.bgz && tabix -f -p vcf chr$i.vcf.bgz; done
