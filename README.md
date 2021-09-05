@@ -63,7 +63,7 @@ O complemento `split-vep` do `bcftools` foi executado via terminal do `Linux` pa
 ```
 for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%SYMBOL\t%Consequence\t%FILTER\n' -d > chr$i.txt; done
 ```
-# Merge GNOMAD variantes com variantes LOF do GNOMAD
+# Merge todas variantes GNOMAD com variantes LOF do GNOMAD
 
 Obter arquivo com todas variantes LOF em https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-flagship-lof/v1.0/gnomad.v2.1.1.all_lofs.txt.bgz.
 
