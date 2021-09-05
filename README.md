@@ -63,3 +63,33 @@ O complemento `split-vep` do `bcftools` foi executado via terminal do `Linux` pa
 ```
 for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%SYMBOL\t%Consequence\t%FILTER\n' -d > chr$i.txt; done
 ```
+# Merge WES do BIPMED com LOF do GNOMAD
+
+```r
+# ABRIR ARQUIVO COM TODOS OS LOF DO GNOMAD
+gene_data = read.table("gnomad.v2.1.1.all_lofs.txt.bgz", header = T)
+
+#EXTRAIR COLUNA COM SIMBOLOS DOS GENES
+symbols_gene = data.frame(unique(gene_data$gene_symbols))
+colnames(symbols_gene) = c("gene_symbols")
+
+for (i in 1:22){
+#ENTRADA DOS EXOMAS DO GNOMAD
+gnomad_exome = read.table(paste0("chr",i,".txt"), header = F)
+
+#MERGE ENTRE EXOMAS GNOMAD E LOF GNOMAD
+saida = merge(gnomad_exome, symbols_gene, by.x = "V7", by.y = "gene_symbols")
+
+#FILTRAR OS EXOMAS COM QUALIDADE PASS
+saida = subset(saida, saida$V9 == "PASS")
+
+#FILTRAR CLASSES DE VARIANTES
+consequence = data.frame(consequence = c("frameshift_variant", "stop_gained", "splice_donor_variant", "splice_acceptor_variant"))
+saida_release = merge(saida, consequence, by.x = "V8", by.y = "consequence")
+
+#ESCREVER TABELAS EM FORMATO TXT DOS GENES ALVOS)
+write.table(saida_release,file= paste0("chr",i,"_release.txt"), row.names = F, col.names = F)
+
+rm (gnomad_exome, saida, saida_release)
+}
+```
