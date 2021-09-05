@@ -9,7 +9,7 @@
 import os #necessário para executar comandos via terminal
 
 #Tratamento de dados WES com Plink
-cmd = "plink --vcf wes_hg19.vcf.gz --make-bed --out wes_hg19 --double-id --biallelic-only strict"
+cmd = "plink --vcf BIPMED_WES_hg19.vcf.gz --make-bed --out wes_hg19 --double-id --biallelic-only strict"
 os.system(cmd)
 
 #Abrir o arquivo e remover espaços e quebra de linhas
@@ -63,10 +63,10 @@ with open("wes_hg19.bim", "w") as saida:
         saida.write(linha)
 saida.close()
 
-#controle de qualidade do WES
+#Controle de qualidade do WES
 cmd = "plink --bfile wes_hg19 --geno 0.05 --mind 0.05 --hwe 0.01 --make-bed --out wes_filtered"
 os.system(cmd)
 
-#calcular a frequência alélica de WES do BIPMED
+#Calcular a frequência alélica de WES do BIPMED
 cmd = "plink --bed wes_filtered.bed --bim wes_filtered.bim --fam wes_filtered.fam --freq --family --out wes_AF"
 os.system(cmd)
