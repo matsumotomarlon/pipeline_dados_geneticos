@@ -65,11 +65,9 @@ for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -f '%CHROM\t%POS\t%ID
 ```
 # Merge todas variantes GNOMAD com variantes LOF do GNOMAD
 
-Obter arquivo com todas variantes LOF em https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-flagship-lof/v1.0/gnomad.v2.1.1.all_lofs.txt.bgz.
+O arquivo de variantes LOF `gnomad.v2.1.1.all_lofs.txt.bgz` disponivel no GNOMAD não contém frequência alélica.
 
-**OBS:** O arquivo acima não disponibiliza frequência alélica.
-
-Por isso realizar merge entre todas variantes com variantes LOF (`gnomad.v2.1.1.all_lofs.txt.bgz`) para obter frequência alélica das variantes LOF utilizando o ambiente `R`:
+Por isso, realizar merge entre todas variantes com variantes LOF (`gnomad.v2.1.1.all_lofs.txt.bgz`) para obter frequência alélica das variantes LOF utilizando o ambiente `R`:
 
 ```r
 # ABRIR ARQUIVO COM TODOS OS LOF DO GNOMAD
