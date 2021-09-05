@@ -89,11 +89,11 @@ saida = merge(gnomad_exome, symbols_gene, by.x = "V7", by.y = "gene_symbols")
 #FILTRAR OS EXOMAS COM QUALIDADE PASS
 saida = subset(saida, saida$V9 == "PASS")
 
-#FILTRAR CLASSES DE VARIANTES
+#MERGE POR CLASSES DE VARIANTES
 consequence = data.frame(consequence = c("frameshift_variant", "stop_gained", "splice_donor_variant", "splice_acceptor_variant"))
 saida_release = merge(saida, consequence, by.x = "V8", by.y = "consequence")
 
-#ESCREVER TABELAS EM FORMATO TXT DOS GENES ALVOS)
+#ESCREVER TABELAS EM FORMATO TXT DOS GENES ALVOS
 write.table(saida_release,file= paste0("chr",i,"_release.txt"), row.names = F, col.names = F)
 
 rm (gnomad_exome, saida, saida_release)
