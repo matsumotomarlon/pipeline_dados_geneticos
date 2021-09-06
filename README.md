@@ -13,6 +13,14 @@ Os dados genéticos do exoma do BIPMED (GRCh37/hg19) está disponivel em https:/
 
 Executar o script `pipeline_dados_geneticos.py` via terminal `Linux` para realizar o controle de qualidade e cálculo de frequência alélica.
 
+Certifique se o arquivo `BIPMED_WES_hg19.vcf.gz` está no mesmo `diretório` do script `pipeline_dados_geneticos.py`.
+
+No terminal do linux execute o comando: 
+
+```
+python pipeline_dados_geneticos.py
+```
+
 # Obter arquivos de dados de exoma do gnomAD
 
 O arquivo de texto `link_gnomad_exome.txt` contém os link para baixar os arquivos de exomas via terminal do linux
