@@ -104,4 +104,19 @@ write.table(saida_release,file= paste0("chr",i,"_release.txt"), row.names = F, c
 
 rm (gnomad_exome, saida, saida_release)
 }
+
+#MERGE DE TODOS OS CHRS
+system("cat *.txt > chr_release_merged.txt")
+
+#ABRIR ARQUIVO DE FREQ LOF MESCLADO DO BIPMED E NOMEAR COLUNAS
+gnomad_exome = read.table("LOF_AF_PASS/chr_release_merged.txt", header = F)
+gnomad_exome = gnomad_exome[,c(3:8, 2:1, 9:17)]
+
+colnames(gnomad_exome) = c("chr", "pos", "id", "ref", "alt", "af_pop_total", "gene", "consequence", 
+                           "filter_exome", "af_eas", "af_nfe", "af_afr", "af_amr", 
+                           "af_asj", "af_fin", "af_sas", "af_oth")
+
+#SALVAR ARQUIVO DE FREQ LOF MESCLADO
+write.table(gnomad_exome,file="LOF_AF_PASS/chr_release_merged.txt", row.names = F, col.names = T)
+
 ```
