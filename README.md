@@ -106,7 +106,7 @@ rm (gnomad_exome, saida, saida_release)
 }
 
 #MERGE DE TODOS OS CHRS
-system("cat *.txt > chr_release_merged.txt")
+system("cat LOF_AF_PASS/*.txt > chr_release_merged.txt")
 
 #ABRIR ARQUIVO DE FREQ LOF MESCLADO DO BIPMED E NOMEAR COLUNAS
 gnomad_exome = read.table("LOF_AF_PASS/chr_release_merged.txt", header = F)
