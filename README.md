@@ -69,7 +69,7 @@ for i in $(seq 1 22); do gunzip -c gnomad.exomes.r2.1.1.sites.$i.vcf.bgz | sed "
 O complemento `split-vep` do `bcftools` foi executado via terminal do `Linux` para extrair os campos desejados:
 
 ```
-for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%SYMBOL\t%Consequence\t%FILTER\n' -d > chr$i.txt; done
+for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -F '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%SYMBOL\t%Consequence\t%FILTER\t%AF\t%AF_eas\t%AF_nfe\t%AF_afr\t%AF_amr\t%AF_asj\t%AF_fin\t%AF_sas\t%AF_oth\n' -d > chr$i.txt; done
 ```
 # Merge todas variantes GNOMAD com variantes LOF do GNOMAD
 
