@@ -1,11 +1,4 @@
-#Comandos para instalar pacotes, caso não tenha o pacote instalado retire a tag "#" e execute os comandos abaixo:
-#!py -m pip install numpy
-#!py -m pip install pandas
-#!py -m pip install seaborn
-#!py -m pip install matplolib
 
-#import numpy as np #biblioteca utilizada para trabalhar com vetores
-#import pandas as pd #biblioteca para trabalhar com dataframes (planilhas excel)
 import os #necessário para executar comandos via terminal
 
 #Tratamento de dados WES com Plink
