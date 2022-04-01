@@ -71,7 +71,7 @@ O complemento `split-vep` do `bcftools` foi executado via terminal do `Linux` pa
 ```
 for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -F '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%SYMBOL\t%Consequence\t%FILTER\t%AF\t%AF_eas\t%AF_nfe\t%AF_afr\t%AF_amr\t%AF_asj\t%AF_fin\t%AF_sas\t%AF_oth\n' -d > chr$i.txt; done
 ```
-# Merge de todas variantes GNOMAD com variantes LOF do GNOMAD
+# Merge de todas variantes gnomAD com variantes LOF do gnomAD
 
 O arquivo de variantes LOF `gnomad.v2.1.1.all_lofs.txt.bgz` disponivel no GNOMAD **não contém frequência alélica**.
 
@@ -99,7 +99,7 @@ rm(gnomad_exome, saida)
 system("cat *.txt > all_chr_merged.txt")
 ```
 
-# Extrair colunas de interesse do GnomAD
+# Extrair colunas de interesse do gnomAD
 
 ```r
 #ABRIR ARQUIVO DE FREQ LOF MESCLADO DO GNOMAD
@@ -182,10 +182,10 @@ merged = merged[order(merged$chr, decreasing=c(FALSE)), ]
 
 write.table(merged,file="hc_gnomad_final.txt", row.names = F, col.names = T)
 ```
-# Encontrar variantes em comum entre BIPMED e GnomAD
+# Encontrar variantes em comum entre BIPMED e gnomAD
 
 ```r
-lof_freq_gnomad = read.table("AF_LOF_GNOMAD/hc_gnomad_final.txt", header = T)
+lof_freq_gnomad = read.table("hc_gnomad_final.txt", header = T)
 
 #ENTRADAS DAS FREQUÊNCIAS DAS POPULAÇÕES DO BIPMED
 wes_bipmed = read.table("wes_AF.frq.strat", header = T)
@@ -217,9 +217,9 @@ genes_alzheimer = read.table("genes_alzheimer.txt", header = T)
 
 #MERGE PARA SELECIONAR SOMENTE OS GENES CANDIDATOS EM BIPMED-GNOMAD
 alzh_gnomad_bipmed = merge(lof_gnomad_bipmed, genes_alzheimer, by.x = "gene_symbols", by.y = "genes_alzheimer")
-write.table(alzh_gnomad_bipmed,file="AF_LOF_GNOMAD/alzh_gnomad_bipmed.txt", row.names = F, col.names = T)
+write.table(alzh_gnomad_bipmed,file="alzh_gnomad_bipmed.txt", row.names = F, col.names = T)
 
 #MERGE PARA SELECIONAR SOMENTE OS GENES CANDIDATOS EM GNOMAD
 alzh_gnomad = merge(hc_gnomad_final, genes_alzheimer, by.x = "gene_symbols", by.y = "genes_alzheimer")
-write.table(alzh_gnomad,file="AF_LOF_GNOMAD/alzh_gnomad.txt", row.names = F, col.names = T)
+write.table(alzh_gnomad,file="alzh_gnomad.txt", row.names = F, col.names = T)
 ```
