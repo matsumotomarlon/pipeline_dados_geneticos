@@ -103,7 +103,7 @@ system("cat *.txt > all_chr_merged.txt")
 
 ```r
 #ABRIR ARQUIVO DE FREQ LOF MESCLADO DO GNOMAD
-gnomad_exome = read.table("AF_LOF_GNOMAD/all_chr_merged.txt", header = F)
+gnomad_exome = read.table("all_chr_merged.txt", header = F)
 
 #ORDENAR POR CROMOSSOMO EM ORDEM CRESCENTE
 gnomad_exome = gnomad_exome[order(gnomad_exome$V1, decreasing=c(FALSE)), ]
@@ -116,18 +116,18 @@ colnames(gnomad_exome) = c("chr", "pos", "id", "ref", "alt", "gene", "consequenc
                            "ac_fin", "an_fin", "af_sas", "ac_sas", "an_sas", "af_oth", "ac_oth", "an_oth")
 
 #SALVAR ARQUIVO DE FREQ LOF MESCLADO
-write.table(gnomad_exome,file="AF_LOF_GNOMAD/all_chr_merged_release.txt", row.names = F, col.names = T)
+write.table(gnomad_exome,file="all_chr_merged_release.txt", row.names = F, col.names = T)
 ```
-#
+# SEPARAR SOMENTE AS VARIANTES LOF COM QUALIDADE HC
 
 ```r
-#SEPARAR SOMENTE AS VARIANTES LOF COM QUALIDADE HC
+#CARREGAR OU INSTALAR PACOTE TIDYVERSE
 if (!require("tidyverse")) {
   install.packages("tidyverse", dependencies = TRUE)
   library(tidyverse)
 }
 
-gnomad_exome = read.table("AF_LOF_GNOMAD/all_chr_merged_release.txt", header = T)
+gnomad_exome = read.table("all_chr_merged_release.txt", header = T)
 
 #SEPARAR AS VARIANTES COM MULTIPLAS CONSEQUENCIAS
 gnomad_exome = separate(gnomad_exome, col = consequence, into = c("consequence"), sep = "&")
@@ -151,5 +151,75 @@ hc_gnomad_exome$lof_flag = "."
 #REMOVER DADOS DUPLICADOS
 unique_gnomad = data.frame(unique(hc_gnomad_exome))
 
-write.table(unique_gnomad,file="AF_LOF_GNOMAD/hc_chr_merged_release.txt", row.names = F, col.names = T)
+write.table(unique_gnomad,file="hc_chr_merged_release.txt", row.names = F, col.names = T)
+```
+
+# EXTRAIR VARIANTES LOF DO GNOMAD
+
+```r
+hc_gnomad_exome = read.table("hc_chr_merged_release.txt", header = T)
+
+no_freq_gnomad = read.table("gnomad.v2.1.1.all_lofs.txt.bgz", header = T)
+
+#COMBINAR VARIANTES DUPLICADAS
+hc_gnomad_multi = hc_gnomad_exome %>%
+  group_by(chr, pos, id, ref, alt, filter_exome, af_gnomad, ac_gnomad, an_gnomad, 
+           af_eas, ac_eas, an_eas, af_nfe, ac_nfe, an_nfe, af_afr, ac_afr, 
+           an_afr, af_amr, ac_amr, an_amr, af_asj, ac_asj, an_asj, af_fin, 
+           ac_fin, an_fin, af_sas, ac_sas, an_sas, af_oth, ac_oth, an_oth) %>%
+  summarise(gene = paste(gene, collapse = ","), consequence = paste(consequence, collapse = ","), .groups = "drop")
+
+#MERGE ENTRE GNOMAD E GNOMAD LOF
+merged = merge(hc_gnomad_multi, no_freq_gnomad, by.x = c("chr", "pos", "ref", "alt"), by.y = c("chrom","pos", "ref", "alt"))
+
+merged$gene = NULL
+merged$consequence = NULL
+merged$gene_ids = NULL
+merged$transcript_ids = NULL
+
+#ORDENAR COLUNAS
+merged = merged[order(merged$chr, decreasing=c(FALSE)), ]
+
+write.table(merged,file="hc_gnomad_final.txt", row.names = F, col.names = T)
+```
+# Encontrar variantes em comum entre BIPMED e GnomAD
+
+```r
+lof_freq_gnomad = read.table("AF_LOF_GNOMAD/hc_gnomad_final.txt", header = T)
+
+#ENTRADAS DAS FREQUÊNCIAS DAS POPULAÇÕES DO BIPMED
+wes_bipmed = read.table("wes_AF.frq.strat", header = T)
+
+#MERGE PARA ENCONTRAR VARIANTES EM COMUM
+lof_gnomad_bipmed = merge(lof_freq_gnomad, wes_bipmed, by.x = c("chr", "id", "ref", "alt"), by.y = c("CHR", "SNP", "A2", "A1"))
+lof_gnomad_bipmed_reverse = merge(lof_freq_gnomad, wes_bipmed, by.x = c("chr", "id", "ref", "alt"), by.y = c("CHR", "SNP", "A1", "A2"))
+
+#MESCLAR AS COLUNAS
+lof_gnomad_bipmed_release =  rbind(lof_gnomad_bipmed, lof_gnomad_bipmed_reverse)
+
+#ORGANIZAR AS COLUNAS
+lof_gnomad_bipmed_release = lof_gnomad_bipmed_release[,c(1:33,37:39,34:35)]
+
+#RENOMEAR AS COLUNAS COM POPULAÇÕES BRASILEIRAS DO BIPMED
+colnames(lof_gnomad_bipmed_release)[c(34:36)] = c("af_brs", "ac_brs", "an_brs")
+
+#ORDENAR COLUNAS
+lof_gnomad_bipmed_release = lof_gnomad_bipmed_release[order(lof_gnomad_bipmed_release$chr, decreasing=c(FALSE)), ]
+
+write.table(lof_gnomad_bipmed_release,file="lof_gnomad_bipmed.txt", row.names = F, col.names = T)
+```
+
+# Encontrar variantes LOF associadas a Alzheimer por genes candidatos
+
+```r
+#GENES CANDIDATOS ALZHEIMER
+genes_alzheimer = read.table("genes_alzheimer.txt", header = T)
+
+#MERGE PARA SELECIONAR SOMENTE OS GENES CANDIDATOS EM BIPMED-GNOMAD
+alzh_gnomad_bipmed = merge(lof_gnomad_bipmed, genes_alzheimer, by.x = "gene_symbols", by.y = "genes_alzheimer")
+write.table(alzh_gnomad_bipmed,file="AF_LOF_GNOMAD/alzh_gnomad_bipmed.txt", row.names = F, col.names = T)
+
+#MERGE PARA SELECIONAR SOMENTE OS GENES CANDIDATOS EM GNOMAD
+alzh_gnomad = merge(hc_gnomad_final, genes_alzheimer, by.x = "gene_symbols", by.y = "genes_alzheimer")
+write.table(alzh_gnomad,file="AF_LOF_GNOMAD/alzh_gnomad.txt", row.names = F, col.names = T)
 ```
