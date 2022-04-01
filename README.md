@@ -99,7 +99,7 @@ rm(gnomad_exome, saida)
 system("cat *.txt > all_chr_merged.txt")
 ```
 
-#EXTRAIR COLUNAS COM FREQUÊNCIAS
+# EXTRAIR COLUNAS COM FREQUÊNCIAS
 
 ```r
 #ABRIR ARQUIVO DE FREQ LOF MESCLADO DO BIPMED E NOMEAR COLUNAS
