@@ -99,7 +99,7 @@ rm(gnomad_exome, saida)
 system("cat *.txt > all_chr_merged.txt")
 ```
 
-# EXTRAIR COLUNAS COM FREQUÊNCIAS
+# Extrair colunas de interesse
 
 ```r
 #ABRIR ARQUIVO DE FREQ LOF MESCLADO DO BIPMED E NOMEAR COLUNAS
@@ -116,4 +116,39 @@ colnames(gnomad_exome) = c("chr", "pos", "id", "ref", "alt", "gene", "consequenc
 
 #SALVAR ARQUIVO DE FREQ LOF MESCLADO
 write.table(gnomad_exome,file="AF_LOF_GNOMAD/all_chr_merged_release.txt", row.names = F, col.names = T)
+```
+#
+
+```r
+#SEPARAR SOMENTE AS VARIANTES LOF COM QUALIDADE HC
+if (!require("tidyverse")) {
+  install.packages("tidyverse", dependencies = TRUE)
+  library(tidyverse)
+}
+
+setwd("C:/Users/SDB/Desktop/MESTRADO")
+
+gnomad_exome = read.table("AF_LOF_GNOMAD/all_chr_merged_release.txt", header = T)
+
+#SEPARAR AS VARIANTES COM MULTIPLAS CONSEQUENCIAS
+gnomad_exome = separate(gnomad_exome, col = consequence, into = c("consequence"), sep = "&")
+
+#MERGE PARA SEPARAR SOMENTE AS VARIANTES COM CLASSES LOF
+consequence = data.frame(lof_consequence = c("frameshift_variant", "stop_gained",
+                                         "splice_donor_variant", "splice_acceptor_variant"))
+saida_release = merge(gnomad_exome, consequence, by.x = "consequence", by.y = "lof_consequence")
+
+#ORGANIZAR AS COLUNAS
+saida_release = saida_release[,c(2:7, 1, 8:38)]
+
+saida_release = saida_release[order(saida_release$chr, saida_release$gene, decreasing=c(FALSE)), ]
+
+hc_gnomad_exome = subset(saida_release, saida_release$lof_quality == "HC")
+
+hc_gnomad_exome$lof_filter = "."
+hc_gnomad_exome$lof_flag = "."
+
+unique_gnomad = data.frame(unique(hc_gnomad_exome))
+
+write.table(unique_gnomad,file="AF_LOF_GNOMAD/hc_chr_merged_release.txt", row.names = F, col.names = T)
 ```
