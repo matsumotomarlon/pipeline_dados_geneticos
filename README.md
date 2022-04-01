@@ -71,52 +71,49 @@ O complemento `split-vep` do `bcftools` foi executado via terminal do `Linux` pa
 ```
 for i in $(seq 1 22); do bcftools +split-vep chr$i.vcf.bgz -F '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%SYMBOL\t%Consequence\t%FILTER\t%AF\t%AF_eas\t%AF_nfe\t%AF_afr\t%AF_amr\t%AF_asj\t%AF_fin\t%AF_sas\t%AF_oth\n' -d > chr$i.txt; done
 ```
-# Merge todas variantes GNOMAD com variantes LOF do GNOMAD
+# Merge de todas variantes GNOMAD com variantes LOF do GNOMAD
 
 O arquivo de variantes LOF `gnomad.v2.1.1.all_lofs.txt.bgz` disponivel no GNOMAD **não contém frequência alélica**.
 
 Por isso, realizar merge entre todas variantes com variantes LOF (`gnomad.v2.1.1.all_lofs.txt.bgz`) para obter frequência alélica das variantes LOF utilizando o ambiente `R`:
 
 ```r
-# ABRIR ARQUIVO COM TODOS OS LOF DO GNOMAD
-gene_data = read.table("gnomad.v2.1.1.all_lofs.txt.bgz", header = T)
-
-#EXTRAIR COLUNA COM SIMBOLOS DOS GENES
-symbols_gene = data.frame(unique(gene_data$gene_symbols))
-colnames(symbols_gene) = c("gene_symbols")
-
-for (i in 1:22){
 #ENTRADA DOS EXOMAS DO GNOMAD
+for (i in 22:1){
 gnomad_exome = read.table(paste0("chr",i,".txt"), header = F)
 
-#MERGE ENTRE EXOMAS GNOMAD E LOF GNOMAD
-saida = merge(gnomad_exome, symbols_gene, by.x = "V7", by.y = "gene_symbols")
+#SEPARAR OS DADOS APROVADOS NO TESTE DE QUALIDADE DE EXOMA
+gnomad_exome = subset(gnomad_exome, gnomad_exome$V8 == "PASS")
 
-#FILTRAR OS EXOMAS COM QUALIDADE PASS
-saida = subset(saida, saida$V9 == "PASS")
+#SEPARAR OS DADOS LOF COM ALTA CONFIABILIDADE E BAIXA CONFIABILIDADE
+saida = subset(gnomad_exome, gnomad_exome$V9 == "HC" | gnomad_exome$V9 == "LC")
 
-#MERGE POR CLASSES DE VARIANTES
-consequence = data.frame(consequence = c("frameshift_variant", "stop_gained", "splice_donor_variant", "splice_acceptor_variant"))
-saida_release = merge(saida, consequence, by.x = "V8", by.y = "consequence")
+#ESCREVER TABELAS EM FORMATO TXT)
+write.table(saida,file= paste0("chr",i,"_release.txt"), row.names = F, col.names = F)
 
-#ESCREVER TABELAS EM FORMATO TXT DOS GENES ALVOS
-write.table(saida_release,file= paste0("chr",i,"_release.txt"), row.names = F, col.names = F)
-
-rm (gnomad_exome, saida, saida_release)
+#PARA CADA CICLO APAGAR DADOS
+rm(gnomad_exome, saida)
 }
 
-#MERGE DE TODOS OS CHRS
-system("cat LOF_AF_PASS/*.txt > chr_release_merged.txt")
+#MERGE DE TODOS OS CHRS EM UM ÚNICO TXT
+system("cat *.txt > all_chr_merged.txt")
+```
 
+###########################################################
+
+```r
 #ABRIR ARQUIVO DE FREQ LOF MESCLADO DO BIPMED E NOMEAR COLUNAS
-gnomad_exome = read.table("LOF_AF_PASS/chr_release_merged.txt", header = F)
-gnomad_exome = gnomad_exome[,c(3:8, 2:1, 9:17)]
+gnomad_exome = read.table("AF_LOF_GNOMAD/all_chr_merged.txt", header = F)
 
-colnames(gnomad_exome) = c("chr", "pos", "id", "ref", "alt", "af_pop_total", "gene", "consequence", 
-                           "filter_exome", "af_eas", "af_nfe", "af_afr", "af_amr", 
-                           "af_asj", "af_fin", "af_sas", "af_oth")
+#ORDENAR POR CROMOSSOMO EM ORDEM CRESCENTE
+gnomad_exome = gnomad_exome[order(gnomad_exome$V1, decreasing=c(FALSE)), ]
+
+colnames(gnomad_exome) = c("chr", "pos", "id", "ref", "alt", "gene", "consequence", "filter_exome", 
+                           "lof_quality", "lof_filter", "lof_flag", "af_gnomad", "ac_gnomad", "an_gnomad", 
+                           "af_eas", "ac_eas", "an_eas", "af_nfe", "ac_nfe", "an_nfe", "af_afr", "ac_afr", 
+                           "an_afr", "af_amr", "ac_amr", "an_amr", "af_asj", "ac_asj", "an_asj", "af_fin", 
+                           "ac_fin", "an_fin", "af_sas", "ac_sas", "an_sas", "af_oth", "ac_oth", "an_oth")
 
 #SALVAR ARQUIVO DE FREQ LOF MESCLADO
-write.table(gnomad_exome,file="LOF_AF_PASS/chr_release_merged.txt", row.names = F, col.names = T)
-
+write.table(gnomad_exome,file="AF_LOF_GNOMAD/all_chr_merged_release.txt", row.names = F, col.names = T)
 ```
