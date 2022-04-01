@@ -118,7 +118,7 @@ colnames(gnomad_exome) = c("chr", "pos", "id", "ref", "alt", "gene", "consequenc
 #SALVAR ARQUIVO DE FREQ LOF MESCLADO
 write.table(gnomad_exome,file="all_chr_merged_release.txt", row.names = F, col.names = T)
 ```
-# SEPARAR SOMENTE AS VARIANTES LOF COM QUALIDADE HC
+# Separar somente as variantes LOF com qualidade HC
 
 ```r
 #CARREGAR OU INSTALAR PACOTE TIDYVERSE
@@ -154,7 +154,7 @@ unique_gnomad = data.frame(unique(hc_gnomad_exome))
 write.table(unique_gnomad,file="hc_chr_merged_release.txt", row.names = F, col.names = T)
 ```
 
-# EXTRAIR VARIANTES LOF DO GNOMAD
+# Extrair variantes LOF do gnomAD
 
 ```r
 hc_gnomad_exome = read.table("hc_chr_merged_release.txt", header = T)
